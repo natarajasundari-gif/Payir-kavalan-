@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>பயிர் காவலன் | Crop Guardian AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Serif+Tamil:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-dark:#00450d;
+    --brand-text:#0c200f;
+    --muted:#41493e;
+    --bg-app:#f4faf2;
+    --card-border:#dcf5d9;
+    --tint-100:#eaf6e8;
+    --tint-200:#d0e9ce;
+    --orange:#fc6018;
+    --orange-text:#a83900;
+    --warn-bg:#fef3c7;
+    --warn-border:#fcd34d;
+    --warn-text:#78350f;
+    --success-bg:#dcfce7;
+    --success-border:#bbf7d0;
+    --danger:#ba1a1a;
+    --white:#ffffff;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans Tamil', sans-serif;
+    background:#d8e6d4;
+    color:var(--brand-text);
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+  }
+
+  .app{
+    width:100%;
+    max-width:480px;
+    min-width:320px;
+    background:linear-gradient(90deg, rgb(244,250,242) 0%, rgb(244,250,242) 100%);
+    min-height:100vh;
+    position:relative;
+    box-shadow:0 0 40px rgba(0,0,0,0.15);
+    display:flex;
+    flex-direction:column;
+  }
+
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;border:none;background:none;cursor:pointer;}
+  img{display:block;max-width:100%;}
+
+  /* ============ HEADER ============ */
+  .app-header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(244,250,242,0.95);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--card-border);
+  }
+
+  .main-app-header{
+    height:56px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 16px 0;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-logo{
+    width:36px;height:36px;
+    background:var(--brand-dark);
+    border-radius:12px;
+    padding:4px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.05);
+    overflow:hidden;
+  }
+  .brand-logo img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+  .brand-text .title{
+    font-family:'Noto Serif Tamil', serif;
+    font-weight:700;
+    font-size:18px;
+    letter-spacing:0.45px;
+    color:var(--brand-dark);
+    line-height:22.5px;
+  }
+  .brand-text .subtitle{
+    font-weight:500;
+    font-size:11px;
+    color:var(--muted);
+  }
+
+  .header-actions{display:flex;align-items:center;gap:8px;}
+  .lang-switch{
+    background:var(--card-border);
+    border:1px solid rgba(192,201,187,0.5);
+    border-radius:9999px;
+    display:flex;
+    align-items:center;
+    padding:3px;
+  }
+  .lang-switch button{
+    padding:2px 8px;
+    border-radius:9999px;
+    font-weight:600;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .lang-switch button.active{background:var(--brand-dark);color:#fff;}
+  .icon-btn-round{
+    width:32px;height:32px;
+    background:var(--card-border);
+    border-radius:9999px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-btn-round img{width:15.83px;height:15.83px;}
+
+  .greeting-bar{
+    background:#eaf6e8;
+    border-top:1px solid rgba(220,245,217,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:9px 16px 8px;
+  }
+  .greeting-bar .greeting{
+    display:flex;align-items:center;gap:6px;
+    font-weight:500;font-size:12px;color:var(--brand-text);
+  }
+  .location-chip{
+    background:#fff;
+    border:1px solid var(--card-border);
+    border-radius:9999px;
+    display:flex;align-items:center;gap:4px;
+    padding:3px 11px;
+    font-weight:600;font-size:12px;color:var(--brand-dark);
+  }
+  .location-chip img{width:9.33px;height:11.67px;}
+
+  /* ============ MAIN CONTENT ============ */
+  main{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    padding:16px;
+    flex:1;
+    padding-bottom:96px;
+  }
+
+  .card{
+    background:#fff;
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:17px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  /* --- Scan card --- */
+  .scan-card{display:flex;flex-direction:column;gap:12px;}
+  .scan-card-top{display:flex;align-items:center;justify-content:space-between;}
+  .live-tag{display:flex;align-items:center;gap:8px;}
+  .live-dot{width:10px;height:10px;background:var(--orange);border-radius:9999px;flex-shrink:0;}
+  .live-tag span{
+    font-weight:700;font-size:12px;letter-spacing:0.6px;text-transform:uppercase;color:var(--brand-dark);
+  }
+  .badge-soft{
+    background:rgba(0,69,13,0.1);
+    color:var(--brand-dark);
+    font-weight:600;font-size:11px;
+    padding:2px 8px;border-radius:6px;
+  }
+  .scan-preview-row{display:flex;gap:12px;align-items:center;}
+  .scan-thumb{
+    width:96px;height:96px;flex-shrink:0;
+    border:1px solid rgba(0,69,13,0.2);
+    border-radius:12px;
+    overflow:hidden;
+    position:relative;
+    background:var(--tint-200);
+    box-shadow:inset 0 2px 4px 1px rgba(0,0,0,0.05);
+  }
+  .scan-thumb img.bg{width:100%;height:100%;object-fit:cover;}
+  .scan-thumb .overlay{
+    position:absolute;inset:0;
+    background:rgba(0,69,13,0.2);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .scan-thumb .target{
+    width:64px;height:64px;
+    border:2px dashed #acf4a4;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .scan-thumb .target img{width:18px;height:18px;}
+  .scan-copy h2{
+    font-family:'Noto Serif Tamil', serif;
+    font-weight:700;font-size:16px;line-height:20px;
+    color:var(--brand-text);margin:0 0 3px;
+  }
+  .scan-copy p{
+    font-weight:400;font-size:12px;line-height:19.5px;color:var(--muted);margin:0;
+  }
+  .cta-row{display:flex;gap:8px;padding-top:4px;}
+  .btn{
+    flex:1;
+    height:48px;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    border-radius:12px;
+    font-weight:700;font-size:14px;
+  }
+  .btn img{width:16.67px;height:16.67px;}
+  .btn-primary{background:var(--brand-dark);color:#fff;box-shadow:0 1px 1px rgba(0,0,0,0.05);}
+  .btn-secondary{background:var(--tint-100);color:var(--brand-dark);border:1px solid var(--card-border);}
+
+  /* --- Weather / outbreak warning card --- */
+  .warning-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .warning-card-head .title-row{display:flex;gap:6px;align-items:center;}
+  .warning-card-head h3{margin:0;font-weight:700;font-size:14px;line-height:17.5px;}
+  .risk-pill{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:rgba(252,96,24,0.1);
+    border:1px solid rgba(252,96,24,0.2);
+    padding:4px 8px;border-radius:6px;
+    font-weight:600;font-size:10px;color:var(--orange-text);
+  }
+  .risk-pill .dot{width:6px;height:6px;background:var(--orange);border-radius:50%;}
+  .warning-desc{
+    font-weight:400;font-size:12px;line-height:19.5px;color:var(--muted);margin:0 0 12px;
+  }
+  .metrics-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .metric{text-align:center;}
+  .metric .label{font-weight:500;font-size:11px;color:var(--muted);margin-bottom:6px;}
+  .metric .value{font-weight:700;font-size:16px;color:var(--brand-text);}
+  .metric .value.humidity{color:var(--orange);}
+
+  /* --- Symptom card --- */
+  .symptom-head{margin-bottom:16px;}
+  .symptom-head h3{margin:0 0 3px;font-weight:700;font-size:14px;line-height:17.5px;}
+  .symptom-head p{margin:0;font-weight:400;font-size:12px;color:var(--muted);line-height:19.5px;}
+  .see-all{font-weight:600;font-size:11px;color:var(--muted);}
+  .symptom-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .symptom-chip{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:12px 8px;
+    border:1px solid var(--card-border);
+    border-radius:12px;
+    background:#fff;
+    transition:all 0.2s ease;
+  }
+  .symptom-chip:active{background:var(--tint-100);}
+  .icon-box{
+    width:36px;height:36px;
+    background:var(--tint-100);
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .symptom-chip span span{
+    font-weight:500;font-size:11px;line-height:13.75px;color:var(--brand-text);text-align:center;
+  }
+
+  /* --- Diagnosis card --- */
+  .diag-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+  .diag-head .title-row{display:flex;gap:12px;}
+  .diag-head h3{margin:0;font-weight:700;font-size:14px;line-height:17.5px;}
+  .accuracy-pill{
+    display:flex;gap:6px;align-items:center;
+    background:var(--success-bg);border:1px solid var(--success-border);
+    border-radius:9999px;padding:4px 8px;
+  }
+  .accuracy-pill img{width:12px;height:12px;}
+  .accuracy-pill span{font-weight:600;font-size:10px;color:var(--brand-dark);}
+  .result-image{position:relative;margin-bottom:12px;}
+  .result-image .main{width:100%;height:220px;object-fit:cover;border-radius:12px;}
+  .tag-crop{
+    position:absolute;bottom:8px;left:8px;
+    display:flex;align-items:center;gap:6px;
+    background:#fff;border-radius:6px;padding:4px 8px;
+    font-weight:600;font-size:10px;
+  }
+  .tag-crop img{width:12px;height:12px;}
+  .tag-disease{
+    position:absolute;top:8px;right:8px;
+    background:rgba(186,26,26,0.9);color:#fff;
+    padding:4px 8px;border-radius:6px;
+    font-weight:600;font-size:10px;
+  }
+  .diag-title h4{margin:0 0 2px;font-weight:700;font-size:14px;line-height:17.5px;}
+  .diag-title .latin{font-weight:400;font-size:11px;color:var(--muted);margin:0;}
+  .treatment-box{background:var(--tint-100);border-radius:12px;padding:12px;margin-top:12px;margin-bottom:12px;}
+  .treatment-box .heading{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:600;font-size:12px;}
+  .treatment-box .heading img{width:16px;height:16px;}
+  .treatment-step{display:flex;gap:12px;margin-bottom:8px;}
+  .treatment-step:last-child{margin-bottom:0;}
+  .treatment-step .num{
+    background:var(--brand-dark);color:#fff;
+    width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;font-weight:700;font-size:12px;
+  }
+  .treatment-step p{margin:0;font-weight:400;font-size:12px;line-height:19.5px;color:var(--brand-text);}
+  .btn-full-guide{
+    width:100%;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--brand-dark);color:#fff;
+    padding:12px;border-radius:12px;
+    font-weight:700;font-size:14px;
+  }
+  .btn-full-guide img{width:16.67px;height:16.67px;}
+
+  /* --- Carousel card --- */
+  .carousel-head{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;}
+  .carousel-head div{flex:1;}
+  .carousel-head h3{margin:0 0 3px;font-weight:700;font-size:14px;line-height:17.5px;}
+  .carousel-head p{margin:0;font-weight:400;font-size:12px;color:var(--muted);}
+  .more{font-weight:600;font-size:12px;color:var(--muted);}
+  .carousel-scroll{
+    display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;
+    scroll-behavior:smooth;
+    scrollbar-width:none;
+  }
+  .carousel-scroll::-webkit-scrollbar{display:none;}
+  .crop-card{
+    flex-shrink:0;
+    width:120px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .crop-card .thumb{width:120px;height:100px;border-radius:12px;overflow:hidden;}
+  .crop-card .thumb img{width:100%;height:100%;object-fit:cover;}
+  .crop-card .name{font-weight:600;font-size:12px;color:var(--brand-text);}
+  .crop-card .disease{font-weight:400;font-size:11px;color:var(--muted);}
+
+  /* --- Guide card --- */
+  .guide-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+  .guide-head img{width:20px;height:20px;}
+  .guide-head h3{margin:0;font-weight:700;font-size:14px;line-height:17.5px;}
+  .guide-steps{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+  .guide-step{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    text-align:center;
+  }
+  .guide-step .num{
+    width:24px;height:24px;
+    background:var(--brand-dark);color:#fff;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:12px;
+  }
+  .guide-step img{width:36px;height:36px;}
+  .guide-step .label{font-weight:500;font-size:10px;line-height:13px;color:var(--brand-text);}
+
+  /* --- Footer note --- */
+  .footer-note{
+    display:flex;gap:12px;
+    background:var(--warn-bg);border:1px solid var(--warn-border);
+    border-radius:12px;padding:12px;
+    margin:0 16px 16px;
+  }
+  .footer-note img{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
+  .footer-note p{margin:0;font-weight:400;font-size:12px;line-height:19.5px;color:var(--warn-text);}
+
+  /* ============ BOTTOM TAB BAR ============ */
+  .bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:0 auto;
+    width:100%;
+    max-width:480px;
+    background:#fff;
+    border-top:1px solid var(--card-border);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+    z-index:30;
+  }
+  .bottom-nav-inner{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 12px 11.5px;
+    height:64px;
+  }
+  .nav-link{
+    width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;
+  }
+  .nav-link img{height:18px;}
+  .nav-link span{font-weight:500;font-size:10px;color:var(--muted);}
+  .nav-link.active span{font-weight:700;color:var(--brand-dark);}
+  .nav-scan{display:flex;flex-direction:column;align-items:center;margin-top:-20px;}
+  .nav-scan .btn-scan{
+    width:56px;height:56px;background:var(--brand-dark);border:4px solid #fff;border-radius:9999px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -4px rgba(0,0,0,0.1);
+  }
+  .nav-scan .btn-scan img{width:23.3px;height:21px;}
+  .nav-scan span{font-weight:700;font-size:10px;color:var(--brand-dark);margin-top:2px;}
+
+  /* Language Toggle CSS */
+  .lang-en { display: none !important; }
+  body[data-lang="en"] .lang-ta { display: none !important; }
+  body[data-lang="en"] .lang-en { display: inline !important; }
+
+  @media (max-width:400px){
+    main{padding:12px;gap:12px;}
+    .card{padding:14px;}
+  }
+</style>
+</head>
+<body data-lang="ta">
+
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="main-app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="https://www.figma.com/api/mcp/asset/9431f011-6dfe-4f0d-bca1-3c1167b96cc2.png" alt="பயிர் காவலன் சின்னம்" />
+        </div>
+        <div class="brand-text">
+          <div class="title">பயிர் காவலன்</div>
+          <div class="subtitle">Crop Guardian AI</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="lang-switch">
+          <button class="lang-btn active" data-lang="ta">தமிழ்</button>
+          <button class="lang-btn" data-lang="en">Eng</button>
+        </div>
+        <button class="icon-btn-round" aria-label="உதவி">
+          <img src="https://www.figma.com/api/mcp/asset/6bade2e3-e98f-4b1c-a222-fed8262e5a15.svg" alt="help" />
+        </button>
+      </div>
+    </div>
+
+    <div class="greeting-bar">
+      <div class="greeting">
+        <span class="lang-ta">வணக்கம், விவசாயி தோழரே</span>
+        <span class="lang-en">Hello, Farmer Friend</span>
+        <span>👋</span>
+      </div>
+      <div class="location-chip">
+        <img src="https://www.figma.com/api/mcp/asset/4983ab42-cdb5-4ae1-8df6-64673470ac50.svg" alt="location" />
+        <span class="lang-ta">மதுரை மாவட்டம்</span>
+        <span class="lang-en">Madurai District</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main>
+
+    <!-- Fast Action Scan Card -->
+    <section class="card scan-card" aria-label="விரைவு பரிசோதனை">
+      <div class="scan-card-top">
+        <div class="live-tag">
+          <span class="live-dot"></span>
+          <span class="lang-ta">விரைவு பரிசோதனை</span>
+          <span class="lang-en">Quick Scan</span>
+        </div>
+        <span class="badge-soft">
+          <span class="lang-ta">AI Scanner 2.0</span>
+          <span class="lang-en">AI Scanner 2.0</span>
+        </span>
+      </div>
+      <div class="scan-preview-row">
+        <div class="scan-thumb">
+          <img class="bg" src="https://www.figma.com/api/mcp/asset/b04ddd2a-c304-4f1d-9b61-0bff6cc191d1.png" alt="விவசாயி பயிர் ஸ்கேன் செய்கிறார்" />
+          <div class="overlay">
+            <div class="target">
+              <img src="https://www.figma.com/api/mcp/asset/2850ca12-8a93-4e89-ba04-560b4399cb01.svg" alt="scan target" />
+            </div>
+          </div>
+        </div>
+        <div class="scan-copy">
+          <h2>
+            <span class="lang-ta">பயிரை உடனடியாக ஸ்கேன் செய்ய</span>
+            <span class="lang-en">Scan Your Crop Now</span>
+          </h2>
+          <p>
+            <span class="lang-ta">பாதிக்கப்பட்ட இலை அல்லது தண்டை படம் பிடித்து நொடியில் நோயறிதல் பெறுங்கள்.</span>
+            <span class="lang-en">Take a photo of affected leaf or stem and get instant diagnosis.</span>
+          </p>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-primary">
+          <img src="https://www.figma.com/api/mcp/asset/89f710fe-09f2-4ee5-975f-d9070daf09b6.svg" alt="" />
+          <span class="lang-ta">கேமரா</span>
+          <span class="lang-en">Camera</span>
+        </button>
+        <button class="btn btn-secondary">
+          <img src="https://www.figma.com/api/mcp/asset/d327e77d-c629-42fa-8387-1ff4484221f5.svg" alt="" />
+          <span class="lang-ta">கேலரி</span>
+          <span class="lang-en">Gallery</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Live outbreak & weather warning card -->
+    <section class="card" aria-label="இன்றைய நோய் எச்சரிக்கை">
+      <div class="warning-card-head">
+        <div class="title-row">
+          <img src="https://www.figma.com/api/mcp/asset/7c429b48-640e-4fc1-a985-a10daecef935.svg" alt="warning" />
+          <h3>
+            <span class="lang-ta">இன்றைய நோய்<br />எச்சரிக்கை</span>
+            <span class="lang-en">Today's Disease<br />Alert</span>
+          </h3>
+        </div>
+        <div class="risk-pill">
+          <span class="dot"></span>
+          <span>
+            <span class="lang-ta">🟡 நடுத்தர<br />ஆபத்து</span>
+            <span class="lang-en">🟡 Medium<br />Risk</span>
+          </span>
+        </div>
+      </div>
+      <p class="warning-desc">
+        <span class="lang-ta">உசிலம்பட்டி பகுதியில் தொடர்ந்து நிலவும் ஈரப்பதம் (84%) காரணமாக தக்காளி மற்றும் கத்தரியில் பூஞ்சை தொற்று பரவும் அபாயம் உள்ளது.</span>
+        <span class="lang-en">Due to high humidity (84%) in Usilampatti area, there's risk of fungal infection in tomato and brinjal crops.</span>
+      </p>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="label">
+            <span class="lang-ta">வெப்பநிலை</span>
+            <span class="lang-en">Temperature</span>
+          </div>
+          <div class="value">28°C</div>
+        </div>
+        <div class="metric">
+          <div class="label">
+            <span class="lang-ta">ஈரப்பதம்</span>
+            <span class="lang-en">Humidity</span>
+          </div>
+          <div class="value humidity">84%</div>
+        </div>
+        <div class="metric">
+          <div class="label">
+            <span class="lang-ta">மழை அளவு</span>
+            <span class="lang-en">Rainfall</span>
+          </div>
+          <div class="value">12 mm</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick symptom picker -->
+    <section class="card symptom-card" aria-label="அறிகுறிகள் மூலம் கண்டறி">
+      <div class="symptom-head">
+        <div>
+          <h3>
+            <span class="lang-ta">அறிகுறிகள் மூலம் கண்டறி</span>
+            <span class="lang-en">Identify by Symptoms</span>
+          </h3>
+          <p>
+            <span class="lang-ta">பயிரில் காணும் மாற்றத்தை தேர்வு செய்யவும்</span>
+            <span class="lang-en">Select changes visible on your crop</span>
+          </p>
+        </div>
+        <div class="see-all">
+          <span class="lang-ta">அனைத்தும்</span>
+          <span class="lang-en">View All</span>
+          <br />&gt;
+        </div>
+      </div>
+      <div class="symptom-grid">
+        <button class="symptom-chip">
+          <span class="icon-box"><img src="https://www.figma.com/api/mcp/asset/02aea5fb-28e1-42bb-be15-f0418c89df62.svg" alt="" /></span>
+          <span>
+            <span class="label-ta lang-ta" style="display:block;">இலைப்புள்ளிகள்</span>
+            <span class="label-en lang-en" style="display:none;">Leaf Spots</span>
+          </span>
+        </button>
+        <button class="symptom-chip">
+          <span class="icon-box"><img src="https://www.figma.com/api/mcp/asset/0c661536-7c30-455c-8f43-26042d700afa.svg" alt="" /></span>
+          <span>
+            <span class="label-ta lang-ta" style="display:block;">இலை மஞ்சள்</span>
+            <span class="label-en lang-en" style="display:none;">Yellowing</span>
+          </span>
+        </button>
+        <button class="symptom-chip">
+          <span class="icon-box"><img src="https://www.figma.com/api/mcp/asset/64f35066-5c2f-4e4d-bf3e-69f3c15fc96f.svg" alt="" /></span>
+          <span>
+            <span class="label-ta lang-ta" style="display:block;">இலை வாடுதல்</span>
+            <span class="label-en lang-en" style="display:none;">Wilting</span>
+          </span>
+        </button>
+        <button class="symptom-chip">
+          <span class="icon-box"><img src="https://www.figma.com/api/mcp/asset/71155920-de96-40d7-9fdb-44971f4ced2c.svg" alt="" /></span>
+          <span>
+            <span class="label-ta lang-ta" style="display:block;">காய் அழுகல்</span>
+            <span class="label-en lang-en" style="display:none;">Fruit Rot</span>
+          </span>
+        </button>
+        <button class="symptom-chip">
+          <span class="icon-box"><img src="https://www.figma.com/api/mcp/asset/53c7fcb2-73db-4422-9fe6-ba5b4fc6a8b9.svg" alt="" /></span>
+          <span>
+            <span class="label-ta lang-ta" style="display:block;">தண்டு பாதிப்பு</span>
+            <span class="label-en lang-en" style="display:none;">Stem Damage</span>
+          </span>
+        </button>
+        <button class="symptom-chip">
+          <span class="icon-box"><img src="https://www.figma.com/api/mcp/asset/e5e7b498-0f45-460d-93fa-7f5effb0bb47.svg" alt="" /></span>
+          <span>
+            <span class="label-ta lang-ta" style="display:block;">பூச்சி தாக்குதல்</span>
+            <span class="label-en lang-en" style="display:none;">Pests Visible</span>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Recent diagnosis / sample result card -->
+    <section class="card diag-card" aria-label="சமீபத்திய ஆய்வு மாதிரி">
+      <div class="diag-head">
+        <div class="title-row">
+          <img src="https://www.figma.com/api/mcp/asset/89897db7-d265-4246-9900-72acbafbab4e.svg" alt="" />
+          <h3>
+            <span class="lang-ta">சமீபத்திய ஆய்வு<br />மாதிரி</span>
+            <span class="lang-en">Recent Diagnosis<br />Report</span>
+          </h3>
+        </div>
+        <div class="accuracy-pill">
+          <img src="https://www.figma.com/api/mcp/asset/67df8b1c-d320-4c3a-8e1a-c3b76606ebd7.svg" alt="" />
+          <span>92%<br /><span class="lang-ta">துல்லியம்</span><span class="lang-en">Accuracy</span></span>
+        </div>
+      </div>
+
+      <div class="result-image">
+        <img class="main" src="https://www.figma.com/api/mcp/asset/fd4081cc-a0c5-42a4-8ad8-b9dfdea6eefa.png" alt="தக்காளி இலைக்கருகல் நோய்" />
+        <div class="tag-crop">
+          <img src="https://www.figma.com/api/mcp/asset/e226d9ec-ba80-4f01-9a48-1296fad6db06.svg" alt="" />
+          <span class="lang-ta">தக்காளி பயிர் (Tomato)</span>
+          <span class="lang-en">Tomato Crop</span>
+        </div>
+        <div class="tag-disease">
+          <span class="lang-ta">பூஞ்சை நோய்</span>
+          <span class="lang-en">Fungal Disease</span>
+        </div>
+      </div>
+
+      <div class="diag-title">
+        <h4>
+          <span class="lang-ta">ஆரம்ப இலைக்கருகல் (Early Blight)</span>
+          <span class="lang-en">Early Blight</span>
+        </h4>
+        <div class="latin">
+          <span class="lang-ta">Alternaria solani பூஞ்சை தொற்று</span>
+          <span class="lang-en">Alternaria solani Fungal Infection</span>
+        </div>
+      </div>
+
+      <div class="treatment-box">
+        <div class="heading">
+          <img src="https://www.figma.com/api/mcp/asset/225247ae-e1a1-4208-ab12-9fa495215ac3.svg" alt="" />
+          <span>
+            <span class="lang-ta">உடனடி தீர்வு நடவடிக்கைகள்:</span>
+            <span class="lang-en">Immediate Actions:</span>
+          </span>
+        </div>
+        <div class="treatment-step">
+          <span class="num">1</span>
+          <p>
+            <span class="lang-ta">பாதிக்கப்பட்ட கீழ் இலைகளை உடனே கிள்ளி அகற்றி நிலத்திற்கு வெளியே எரிக்கவும்.</span>
+            <span class="lang-en">Remove affected lower leaves immediately and burn them outside the field.</span>
+          </p>
+        </div>
+        <div class="treatment-step">
+          <span class="num">2</span>
+          <p>
+            <span class="lang-ta">3% வேப்பெண்ணெய் கரைசல் அல்லது மேங்கோசெப் பரிந்துரைக்கப்பட்ட அளவில் தெளிக்கவும்.</span>
+            <span class="lang-en">Spray 3% neem oil solution or Mancozeb at recommended rate.</span>
+          </p>
+        </div>
+      </div>
+
+      <button class="btn-full-guide">
+        <span class="lang-ta">முழு ஆய்வு வழிகாட்டலை பார்க்க</span>
+        <span class="lang-en">View Full Treatment Guide</span>
+        <img src="https://www.figma.com/api/mcp/asset/96908ac2-53c2-417d-9eaf-292ebf3eedbf.svg" alt="" />
+      </button>
+    </section>
+
+    <!-- Common crop diseases carousel -->
+    <section class="card carousel-card" aria-label="பயிர் நோய் வழிகாட்டி">
+      <div class="carousel-head">
+        <div>
+          <h3>
+            <span class="lang-ta">பயிர் நோய் வழிகாட்டி</span>
+            <span class="lang-en">Crop Disease Guide</span>
+          </h3>
+          <p>
+            <span class="lang-ta">முக்கிய பயிர்கள் மற்றும் தீர்வுகள்</span>
+            <span class="lang-en">Common crops and solutions</span>
+          </p>
+        </div>
+        <div class="more">
+          <span class="lang-ta">மேலும்</span>
+          <span class="lang-en">More</span>
+          <span>&gt;</span>
+        </div>
+      </div>
+      <div class="carousel-scroll">
+        <div class="crop-card">
+          <div class="thumb"><img src="https://www.figma.com/api/mcp/asset/c2f6daea-d350-415c-ba27-2d8194ab7de2.png" alt="தக்காளி நோய்" /></div>
+          <div class="name">
+            <span class="lang-ta">தக்காளி</span>
+            <span class="lang-en">Tomato</span>
+          </div>
+          <div class="disease">
+            <span class="lang-ta">இலைக்கருகல்</span>
+            <span class="lang-en">Early Blight</span>
+          </div>
+        </div>
+        <div class="crop-card">
+          <div class="thumb"><img src="https://www.figma.com/api/mcp/asset/6c9e6f20-96cc-45a5-a6b0-a6eb4c9dac5d.png" alt="நெல் குலை நோய்" /></div>
+          <div class="name">
+            <span class="lang-ta">நெல் (Paddy)</span>
+            <span class="lang-en">Paddy</span>
+          </div>
+          <div class="disease">
+            <span class="lang-ta">குலை நோய் (Blast)</span>
+            <span class="lang-en">Blast</span>
+          </div>
+        </div>
+        <div class="crop-card">
+          <div class="thumb"><img src="https://www.figma.com/api/mcp/asset/64028b15-7220-4f60-b4a2-0b4cfb11e061.png" alt="உருளைக்கிழங்கு" /></div>
+          <div class="name">
+            <span class="lang-ta">உருளைக்கிழங்கு</span>
+            <span class="lang-en">Potato</span>
+          </div>
+          <div class="disease">
+            <span class="lang-ta">பிற்கால கருகல்</span>
+            <span class="lang-en">Late Blight</span>
+          </div>
+        </div>
+        <div class="crop-card">
+          <div class="thumb"><img src="https://www.figma.com/api/mcp/asset/722cb9b7-9b1d-41f6-a898-4e5bd46022e7.png" alt="பருத்தி" /></div>
+          <div class="name">
+            <span class="lang-ta">பருத்தி</span>
+            <span class="lang-en">Cotton</span>
+          </div>
+          <div class="disease">
+            <span class="lang-ta">இலைச்சுருட்டு நோய்</span>
+            <span class="lang-en">Leaf Curl</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-step quick app guide -->
+    <section class="card guide-card" aria-label="எப்படி பயன்படுத்துவது?">
+      <div class="guide-head">
+        <img src="https://www.figma.com/api/mcp/asset/ebbcf890-f089-4fd1-aa09-f4cb8fd6aa29.svg" alt="" />
+        <h3>
+          <span class="lang-ta">எப்படி பயன்படுத்துவது?</span>
+          <span class="lang-en">How to Use?</span>
+        </h3>
+      </div>
+      <div class="guide-steps">
+        <div class="guide-step">
+          <span class="num">1</span>
+          <img src="https://www.figma.com/api/mcp/asset/aa460538-4844-4cdd-a6c1-222fa31065d8.svg" alt="" />
+          <span class="label">
+            <span class="lang-ta">புகைப்படம்</span>
+            <span class="lang-en">Photo</span>
+          </span>
+        </div>
+        <div class="guide-step">
+          <span class="num">2</span>
+          <img src="https://www.figma.com/api/mcp/asset/6935ec47-a9ad-49c9-823c-50b83e2d3520.svg" alt="" />
+          <span class="label">
+            <span class="lang-ta">AI ஆய்வு</span>
+            <span class="lang-en">AI Analysis</span>
+          </span>
+        </div>
+        <div class="guide-step">
+          <span class="num">3</span>
+          <img src="https://www.figma.com/api/mcp/asset/79031461-dbdf-4fe0-82a5-146e3f6d43df.svg" alt="" />
+          <span class="label">
+            <span class="lang-ta">முடிவு</span>
+            <span class="lang-en">Result</span>
+          </span>
+        </div>
+        <div class="guide-step">
+          <span class="num">4</span>
+          <img src="https://www.figma.com/api/mcp/asset/a6719703-b881-436c-ad4a-530e1b20c7ba.svg" alt="" />
+          <span class="label">
+            <span class="lang-ta">பாதுகாப்பு</span>
+            <span class="lang-en">Protect</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Farmer helpline / advisory footer note -->
+    <section class="footer-note">
+      <img src="https://www.figma.com/api/mcp/asset/2f4bfe6f-99de-4e17-8b30-25e75829bf4c.svg" alt="" />
+      <p>
+        <strong>
+          <span class="lang-ta">வேளாண் ஆலோசனை:</span>
+          <span class="lang-en">Agricultural Advice:</span>
+        </strong>
+        <span class="lang-ta">கடுமையான நோய் தாக்குதலுக்கு உங்கள் வட்டார வேளாண் உதவி இயக்குனர் அலுவலகத்தை அணுகவும்.</span>
+        <span class="lang-en">For severe disease outbreaks, contact your local agricultural department office.</span>
+      </p>
+    </section>
+
+  </main>
+
+  <!-- ============ BOTTOM TAB BAR ============ -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <a href="#" class="nav-link active">
+        <img src="https://www.figma.com/api/mcp/asset/f53818ce-97df-464c-933a-5aa6eb1cf5ac.svg" alt="" />
+        <span class="lang-ta">முகப்பு</span>
+        <span class="lang-en">Home</span>
+      </a>
+      <a href="#" class="nav-link">
+        <img src="https://www.figma.com/api/mcp/asset/cf7a80cd-3dfd-4d4d-a105-a4981f193619.svg" alt="" />
+        <span class="lang-ta">நோய்கள்</span>
+        <span class="lang-en">Diseases</span>
+      </a>
+      <a href="#" class="nav-scan">
+        <span class="btn-scan">
+          <img src="https://www.figma.com/api/mcp/asset/b989f255-dc17-45d2-ac42-979c9f6f1b31.svg" alt="" />
+        </span>
+        <span class="lang-ta">ஸ்கேன்</span>
+        <span class="lang-en">Scan</span>
+      </a>
+      <a href="#" class="nav-link">
+        <img src="https://www.figma.com/api/mcp/asset/e5d29990-8c46-4e0b-8595-c4219a7b470a.svg" alt="" />
+        <span class="lang-ta">எச்சரிக்கை</span>
+        <span class="lang-en">Alerts</span>
+      </a>
+      <a href="#" class="nav-link">
+        <img src="https://www.figma.com/api/mcp/asset/e564660a-1c31-47bb-bb6a-5388db58038d.svg" alt="" />
+        <span class="lang-ta">உதவி</span>
+        <span class="lang-en">Help</span>
+      </a>
+    </div>
+  </nav>
+
+</div>
+
+<script>
+  // Language switching functionality
+  const langBtns = document.querySelectorAll('.lang-btn');
+  const body = document.body;
+  let currentLang = 'ta';
+
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      const selectedLang = btn.getAttribute('data-lang');
+      
+      // Update active button
+      langBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Update page language
+      body.setAttribute('data-lang', selectedLang);
+      currentLang = selectedLang;
+      
+      // Save language preference
+      localStorage.setItem('preferredLang', selectedLang);
+    });
+  });
+
+  // Load saved language preference
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('preferredLang') || 'ta';
+    const langBtn = document.querySelector(`[data-lang="${savedLang}"]`);
+    
+    if (langBtn) {
+      langBtn.click();
+    }
+  });
+</script>
+
+</body>
+</html>
